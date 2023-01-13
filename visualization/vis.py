@@ -250,16 +250,18 @@ def visualize_prediction(pointcloud, colors, poses=None, renwin=None):
     interactor.Start()
 
 class vtkTimerCallback():
-    def __init__(self, cinematic=False, render_path=None, clear_points=False, is_kitti=False):
+    def __init__(self, cinematic=False, render_path=None, clear_points=False, clear_cameras=False, is_kitti=False):
         self.timer_count = 0
         self.write_count = 0
 
         self.cinematic = cinematic
         self.render_path = render_path
         self.clear_points = clear_points
+        self.clear_cameras = clear_cameras
         self.is_kitti = is_kitti
 
         self.point_actor = None
+        self.camera_actors = []
         self.pos = None
         self.pt = None
         self.alpha = 0.2
@@ -284,10 +286,17 @@ class vtkTimerCallback():
                 self.point_actor = pointcloud_actor
 
             if pose is not None:
+
+                if self.clear_cameras:
+                    for cam_actor in self.camera_actors:
+                        renderer.RemoveActor(cam_actor)
+
                 R, t = pose[:3, :3], pose[:3, 3]
                 cam_actor = create_camera_actor(R,t)
                 cam_actor.GetProperty().SetColor((255, 255, 0))
                 renderer.AddActor(cam_actor)
+
+                self.camera_actors.append(cam_actor)
                 
                 if self.cinematic:
                     camera = renderer.GetActiveCamera()
