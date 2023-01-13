@@ -344,12 +344,13 @@ class vtkTimerCallback():
 
 
 class InteractiveViz(Process):
-    def __init__(self, queue, cinematic, render_path, clear_points, is_kitti=False):
+    def __init__(self, queue, cinematic, render_path, clear_points, clear_cameras, is_kitti=False):
         super(InteractiveViz, self).__init__()
         self.queue = queue
         self.cinematic = cinematic
         self.render_path = render_path
         self.clear_points = clear_points
+        self.clear_cameras = clear_cameras
         self.is_kitti = is_kitti
 
     def run(self):
@@ -374,7 +375,7 @@ class InteractiveViz(Process):
 
         interactor.Initialize()
 
-        cb = vtkTimerCallback(self.cinematic, self.render_path, self.clear_points)
+        cb = vtkTimerCallback(self.cinematic, self.render_path, self.clear_points, self.clear_cameras)
         cb.queue = self.queue
 
         interactor.AddObserver('TimerEvent', cb.execute)
