@@ -272,7 +272,7 @@ class vtkTimerCallback():
             renwin = obj.GetRenderWindow()
             renderer = renwin.GetRenderers().GetFirstRenderer()
 
-            pointcloud, pose = self.queue.get(False)
+            pointcloud, poses = self.queue.get(False)
 
 
             if pointcloud is not None:
@@ -285,11 +285,13 @@ class vtkTimerCallback():
                 renderer.AddActor(pointcloud_actor)
                 self.point_actor = pointcloud_actor
 
-            if pose is not None:
+            if len(poses) > 0:
 
                 if self.clear_cameras:
                     for cam_actor in self.camera_actors:
                         renderer.RemoveActor(cam_actor)
+
+            for pose in poses:               
 
                 R, t = pose[:3, :3], pose[:3, 3]
                 cam_actor = create_camera_actor(R,t)
